@@ -1,4 +1,4 @@
-import { configureStore } from '@reduxjs/toolkit'
+import {configureStore} from '@reduxjs/toolkit'
 import loginReducer from "../features/login/loginSlice";
 import bookReducer from "../features/book/bookSlice";
 import authorSlice from "../features/author/authorSlice";

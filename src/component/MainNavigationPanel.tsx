@@ -12,6 +12,9 @@ import MenuItem from '@mui/material/MenuItem';
 import {Link} from "react-router-dom";
 import {useSelector} from "react-redux";
 import {RootState} from "../app/store";
+import {Login} from "../page/Login";
+import {useAppDispatch} from "../app/hooks";
+import {setLogout} from "../features/login/loginSlice";
 
 interface PageNameUrl {
     name: string
@@ -23,13 +26,14 @@ const pages: PageNameUrl[] = [
         { name: "Autoři", url: "/authors" }
 ];
 
-//const userOptions = ['Login', 'Logout'];
-
 export function MainNavigationPanel() {
+    const dispatch = useAppDispatch();
     const appUser = useSelector((state: RootState) => state.login);
+    const isUserLoggedIn = appUser.value != undefined || appUser.value != null;
 
     const [anchorElNav, setAnchorElNav] = React.useState<null | HTMLElement>(null);
     const [anchorElUser, setAnchorElUser] = React.useState<null | HTMLElement>(null);
+    const [canShowLogin, setCanShowLogin] = React.useState(false);
 
     const handleOpenNavMenu = (event: React.MouseEvent<HTMLElement>) => {
         setAnchorElNav(event.currentTarget);
@@ -42,11 +46,21 @@ export function MainNavigationPanel() {
         setAnchorElNav(null);
     };
 
-    const handleCloseUserMenu = (userOption: string) => {
+    const handleSelectMenuItem = (userOption: string) => {
         setAnchorElUser(null);
+
+        if(userOption === "Login") {
+            setCanShowLogin(true);
+        } else if(userOption === "Logout") {
+            dispatch(setLogout());
+        }
     };
 
-    return (
+    const handleCloseLogin = () => {
+        setCanShowLogin(false);
+    };
+
+    return <>
         <AppBar position="static" sx={{background: '#d1c7c7'}}>
             <Container maxWidth="xl">
                 <Toolbar disableGutters>
@@ -132,7 +146,12 @@ export function MainNavigationPanel() {
                         ))}
                     </Box>
 
-                    <Box sx={{ flexGrow: 0 }}>
+                    <Box sx={{ flexGrow: 0, display: "flex", alignItems: "center" }}>
+                        { isUserLoggedIn &&
+                            <Typography sx={{mr: 1}}>
+                                {appUser.value?.firstName + " " + appUser.value?.lastName + " (" + appUser.value?.roles.join(", ") + ")"}
+                            </Typography>}
+
                         <IconButton onClick={handleOpenUserMenu} sx={{ p: 0 }}>
                             <Avatar alt="User User" src="https://cdn-icons-png.flaticon.com/512/6596/6596121.png" />
                         </IconButton>
@@ -150,20 +169,21 @@ export function MainNavigationPanel() {
                                 horizontal: 'right',
                             }}
                             open={Boolean(anchorElUser)}
-                            onClose={handleCloseUserMenu}
+                            onClose={handleSelectMenuItem}
                         >
-                            { appUser === undefined ?
-                                <MenuItem key={"Login"} onClick={() => handleCloseUserMenu("Login")}>
-                                    <Typography textAlign="center">{"Login"}</Typography>
+                            { isUserLoggedIn ?
+                                <MenuItem key={"Logout"} onClick={() => handleSelectMenuItem("Logout")}>
+                                    <Typography textAlign="center">Logout</Typography>
                                 </MenuItem> :
-                                <MenuItem key={"Logout"} onClick={() => handleCloseUserMenu("Logout")}>
-                                    <Typography textAlign="center">{"Logout"}</Typography>
-                                </MenuItem>
-                            }
+                                <MenuItem key={"Login"} onClick={() => handleSelectMenuItem("Login")}>
+                                    <Typography textAlign="center">Login</Typography>
+                                </MenuItem> }
                         </Menu>
                     </Box>
                 </Toolbar>
             </Container>
         </AppBar>
-    );
+
+        { canShowLogin && <Login isOpen={canShowLogin} onClose={handleCloseLogin}/> }
+    </>
 }

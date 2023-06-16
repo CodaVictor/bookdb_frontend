@@ -1,4 +1,4 @@
-import {Box, ToggleButtonGroup, ToggleButton, Typography} from "@mui/material";
+import {Box, ToggleButton, ToggleButtonGroup, Typography} from "@mui/material";
 
 interface Props {
     currentOrder: BookOrder

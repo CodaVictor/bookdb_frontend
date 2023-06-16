@@ -1,5 +1,4 @@
-import {Dialog, DialogTitle, List, ListItem, ListItemAvatar, Avatar, ListItemButton, ListItemText} from "@mui/material";
-import PersonIcon from '@mui/icons-material/Person';
+import {Dialog, DialogTitle} from "@mui/material";
 import {UserLogin} from "../types/AppUser";
 
 interface Props {

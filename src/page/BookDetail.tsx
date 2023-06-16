@@ -1,4 +1,4 @@
-import {Container, Backdrop, CircularProgress, Box, Typography, Button, Rating} from "@mui/material";
+import {Backdrop, Box, Button, CircularProgress, Container, Rating, Typography} from "@mui/material";
 import {useQuery} from "react-query";
 import {Book} from "../types/Book";
 import {bookImageUrl} from "./Books";

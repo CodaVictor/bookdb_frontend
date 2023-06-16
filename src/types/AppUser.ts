@@ -1,17 +1,21 @@
 export interface AppUser {
     id: number
-    firstname: string
-    lastname: string
+    firstName: string
+    lastName: string
     email: string
+    token: string
+    roles: string[]
 }
 
 export interface UserLogin {
-    email: string
+    username: string
     password: string
 }
 
-export interface UserTokens {
+export interface UserAuthenticationResponse {
+    error: boolean
     access_token: string
-    refresh_token: string
+    message: string
+    roles: string[]
 }
 
