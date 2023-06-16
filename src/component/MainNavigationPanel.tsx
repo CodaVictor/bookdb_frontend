@@ -1,15 +1,8 @@
 import * as React from 'react';
-import AppBar from '@mui/material/AppBar';
-import Box from '@mui/material/Box';
-import Toolbar from '@mui/material/Toolbar';
-import IconButton from '@mui/material/IconButton';
-import Typography from '@mui/material/Typography';
-import Menu from '@mui/material/Menu';
-import Container from '@mui/material/Container';
-import Avatar from '@mui/material/Avatar';
-import Button from '@mui/material/Button';
-import MenuItem from '@mui/material/MenuItem';
-import {Link} from "react-router-dom";
+import {AppBar, Box, Toolbar, IconButton, Typography, Menu, Container, Avatar, Button, MenuItem, Link} from '@mui/material';
+import MenuIcon from '@mui/icons-material/Menu';
+import {Link as RouterLink} from "react-router-dom";
+import MenuBookRoundedIcon from '@mui/icons-material/MenuBookRounded';
 import {useSelector} from "react-redux";
 import {RootState} from "../app/store";
 import {Login} from "../page/Login";
@@ -19,11 +12,13 @@ import {setLogout} from "../features/login/loginSlice";
 interface PageNameUrl {
     name: string
     url: string
+    allowFor: string[]
 }
 
 const pages: PageNameUrl[] = [
-        { name: "Knihy", url: "/" },
-        { name: "Autoři", url: "/authors" }
+        { name: "Knihy", url: "/", allowFor: [] },
+        { name: "Autoři", url: "/authors", allowFor: [] },
+        { name: "Správa knih", url: "/manage/books", allowFor: ["ROLE_ADMIN", "ROLE_EDITOR"] }
 ];
 
 export function MainNavigationPanel() {
@@ -49,9 +44,9 @@ export function MainNavigationPanel() {
     const handleSelectMenuItem = (userOption: string) => {
         setAnchorElUser(null);
 
-        if(userOption === "Login") {
+        if (userOption === "Login") {
             setCanShowLogin(true);
-        } else if(userOption === "Logout") {
+        } else if (userOption === "Logout") {
             dispatch(setLogout());
         }
     };
@@ -60,10 +55,25 @@ export function MainNavigationPanel() {
         setCanShowLogin(false);
     };
 
+    const getPageButtons = () => {
+        return pages.filter((page) => {
+            if (page.allowFor == null || page.allowFor.length === 0) {
+                return true
+            } else {
+                if (isUserLoggedIn && appUser.value?.roles != null && appUser.value?.roles.length > 0) {
+                    return appUser.value?.roles.some(v => page.allowFor.includes(v));
+                } else {
+                    return false
+                }
+            }
+        });
+    }
+
     return <>
         <AppBar position="static" sx={{background: '#d1c7c7'}}>
             <Container maxWidth="xl">
                 <Toolbar disableGutters>
+                    <MenuBookRoundedIcon sx={{ display: { xs: 'none', md: 'flex' }, mr: 1 }} />
                     <Typography
                         variant="h6"
                         noWrap
@@ -71,6 +81,7 @@ export function MainNavigationPanel() {
                         href="/"
                         sx={{
                             mr: 2,
+                            display: { xs: 'none', md: 'flex' },
                             fontFamily: 'monospace',
                             fontWeight: 700,
                             letterSpacing: '.3rem',
@@ -81,7 +92,7 @@ export function MainNavigationPanel() {
                         BookDB
                     </Typography>
 
-                    <Box sx={{ flexGrow: 1, display: { xs: 'flex', md: 'none' } }}>
+                    <Box sx={{flexGrow: 1, display: {xs: 'flex', md: 'none'}}}>
                         <IconButton
                             size="large"
                             aria-label="account of current user"
@@ -90,6 +101,7 @@ export function MainNavigationPanel() {
                             onClick={handleOpenNavMenu}
                             color="inherit"
                         >
+                            <MenuIcon />
                         </IconButton>
                         <Menu
                             id="menu-appbar"
@@ -106,17 +118,21 @@ export function MainNavigationPanel() {
                             open={Boolean(anchorElNav)}
                             onClose={handleCloseNavMenu}
                             sx={{
-                                display: { xs: 'block', md: 'none' },
+                                display: {xs: 'block', md: 'none'},
                             }}
                         >
-                            {pages.map((page) => (
-                                <MenuItem key={page.name} onClick={handleCloseNavMenu}>
-                                    <Typography textAlign="center">{page.name}</Typography>
-                                </MenuItem>
-                            ))}
+                            { getPageButtons().map((page) => {
+                                return (
+                                    <MenuItem key={page.name} onClick={handleCloseNavMenu}>
+                                        <Link component={RouterLink} to={page.url} underline="none">
+                                            {page.name}
+                                        </Link>
+                                    </MenuItem>)
+                            }) }
                         </Menu>
                     </Box>
-                    <Typography
+                    <MenuBookRoundedIcon sx={{ display: { xs: 'flex', md: 'none' }, mr: 1 }} />
+                    {<Typography
                         variant="h5"
                         noWrap
                         component="a"
@@ -132,31 +148,31 @@ export function MainNavigationPanel() {
                             textDecoration: 'none',
                         }}
                     >
-                        LOGO
-                    </Typography>
-                    <Box sx={{ flexGrow: 1, display: { xs: 'none', md: 'flex' } }}>
-                        {pages.map((page) => (
-                            <Button component={Link} to={page.url}
-                                key={page.name}
-                                onClick={handleCloseNavMenu}
-                                sx={{ my: 2, color: 'white', display: 'block' }}
-                            >
+                        BookDB
+                    </Typography>}
+                    <Box sx={{flexGrow: 1, display: {xs: 'none', md: 'flex'}}}>
+                        {getPageButtons().map((page) => (
+                            <Button component={RouterLink} to={page.url}
+                                    key={page.name}
+                                    onClick={handleCloseNavMenu}
+                                    sx={{my: 2, color: 'white', display: 'block'}}>
                                 {page.name}
                             </Button>
                         ))}
                     </Box>
 
-                    <Box sx={{ flexGrow: 0, display: "flex", alignItems: "center" }}>
-                        { isUserLoggedIn &&
+                    <Box sx={{flexGrow: 0, display: "flex", alignItems: "center"}}>
+                        {isUserLoggedIn &&
                             <Typography sx={{mr: 1}}>
-                                {appUser.value?.firstName + " " + appUser.value?.lastName + " (" + appUser.value?.roles.join(", ") + ")"}
+                                {appUser.value?.firstName + " " + appUser.value?.lastName +
+                                    " (" + appUser.value?.roles.map((item) => item.replace("ROLE_", "")).join(", ") + ")"}
                             </Typography>}
 
-                        <IconButton onClick={handleOpenUserMenu} sx={{ p: 0 }}>
-                            <Avatar alt="User User" src="https://cdn-icons-png.flaticon.com/512/6596/6596121.png" />
+                        <IconButton onClick={handleOpenUserMenu} sx={{p: 0}}>
+                            <Avatar alt="User User" src="https://cdn-icons-png.flaticon.com/512/6596/6596121.png"/>
                         </IconButton>
                         <Menu
-                            sx={{ mt: '45px' }}
+                            sx={{mt: '45px'}}
                             id="menu-appbar"
                             anchorEl={anchorElUser}
                             anchorOrigin={{
@@ -171,19 +187,19 @@ export function MainNavigationPanel() {
                             open={Boolean(anchorElUser)}
                             onClose={handleSelectMenuItem}
                         >
-                            { isUserLoggedIn ?
+                            {isUserLoggedIn ?
                                 <MenuItem key={"Logout"} onClick={() => handleSelectMenuItem("Logout")}>
                                     <Typography textAlign="center">Logout</Typography>
                                 </MenuItem> :
                                 <MenuItem key={"Login"} onClick={() => handleSelectMenuItem("Login")}>
                                     <Typography textAlign="center">Login</Typography>
-                                </MenuItem> }
+                                </MenuItem>}
                         </Menu>
                     </Box>
                 </Toolbar>
             </Container>
         </AppBar>
 
-        { canShowLogin && <Login isOpen={canShowLogin} onClose={handleCloseLogin}/> }
+        {canShowLogin && <Login isOpen={canShowLogin} onClose={handleCloseLogin}/>}
     </>
 }

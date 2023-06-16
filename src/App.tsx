@@ -22,9 +22,14 @@ function App() {
                         <MainNavigationPanel/>
                         <Routes>
                             <Route path="/" element={<Books/>}/>
-                            <Route path="books/:bookId" element={<BookDetail/>}/>
-                            <Route path="authors/" element={<Authors/>}/>
-                            <Route path="authors/:authorId" element={<AuthorDetail/>}/>
+                            <Route path="/books">
+                                <Route index element={<Books/>}/>
+                                <Route path=":bookId" element={<BookDetail/>}/>
+                            </Route>
+                            <Route path="/authors">
+                                <Route index element={<Authors/>}/>
+                                <Route path=":authorId" element={<AuthorDetail/>}/>
+                            </Route>
                         </Routes>
                     </Container>
                 </BrowserRouter>
