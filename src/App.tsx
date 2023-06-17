@@ -10,6 +10,7 @@ import {Books} from "./page/Books";
 import {BookDetail} from "./page/BookDetail";
 import {AuthorDetail} from "./page/AuthorDetail";
 import {Authors} from "./page/Authors";
+import {BooksManager} from "./page/BooksManager";
 
 const queryClient = new QueryClient();
 
@@ -30,6 +31,7 @@ function App() {
                                 <Route index element={<Authors/>}/>
                                 <Route path=":authorId" element={<AuthorDetail/>}/>
                             </Route>
+                            <Route path="/manage/books" element={<BooksManager/>}/>
                         </Routes>
                     </Container>
                 </BrowserRouter>

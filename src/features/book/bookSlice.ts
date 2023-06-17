@@ -29,9 +29,9 @@ export const bookSlice = createSlice({
                         pageCount: action.payload.pageCount,
                         publicationDate: action.payload.publicationDate,
                         description: action.payload.description,
-                        categoryId: action.payload.categoryId,
-                        publisherId: action.payload.publisherId,
-                        genreId: action.payload.genreId
+                        categoryId: action.payload.category,
+                        publisherId: action.payload.publisher,
+                        genreId: action.payload.genre
                     }
                 } else {
                     return bookItem;

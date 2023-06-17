@@ -6,9 +6,9 @@ import {Category} from "./Category";
 export interface Book {
     id: number
     title: string
-    pageCount: number
-    publicationDate: Date
-    language: string
+    pageCount?: number
+    publicationDate?: Date
+    language?: string
     subtitle?: string
     description?: string
     isbn?: string

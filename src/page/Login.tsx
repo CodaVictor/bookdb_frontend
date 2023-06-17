@@ -36,9 +36,10 @@ export function Login({ isOpen, onClose }: Props) {
                 setErrorMessage(loginResponse.message);
             } else {
                 userToken = loginResponse.access_token;
-                const appUser = await fetchUserProfile(email, userToken);
-                appUser.roles = loginResponse.roles;
-                dispatch(setLogin(appUser));
+                const userResult = await fetchUserProfile(email, userToken);
+                const currentUser: AppUser = {id: userResult.id, firstName: userResult.firstName, lastName: userResult.lastName,
+                    email: userResult.email, roles: loginResponse.roles, token: userToken};
+                dispatch(setLogin(currentUser));
                 onClose();
             }
         }

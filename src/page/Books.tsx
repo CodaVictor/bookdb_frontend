@@ -12,11 +12,6 @@ import {useSearchParams} from "react-router-dom";
 
 export const bookImageUrl = "https://cdn-icons-png.flaticon.com/512/130/130304.png?w=826&t=st=1686157901~exp=1686158501~hmac=e0efc001ae0afdf0b6f039e4fa313e9efb538317cf175378258d5e97c18069d1";
 
-interface PaginationParams {
-    page: number
-    pageSize: number
-}
-
 export function Books () {
     const backendUrl = import.meta.env.VITE_BACKEND_URL;
     const category = "Kategorie";
@@ -29,7 +24,7 @@ export function Books () {
     const URL_PAGE_SIZE = "pageSize";
 
     const [searchParams, setSearchParams] = useSearchParams();
-    const page = searchParams.has(URL_PAGE) ? Number(searchParams.get(URL_PAGE)) : DEFAULT_PAGE;
+    //const page = searchParams.has(URL_PAGE) ? Number(searchParams.get(URL_PAGE)) : DEFAULT_PAGE;
     const pageSize = searchParams.has(URL_PAGE_SIZE) ? Number(searchParams.get(URL_PAGE_SIZE)) : DEFAULT_PAGE_SIZE;
 
     const [totalPages, setTotalPages] = useState(1);
